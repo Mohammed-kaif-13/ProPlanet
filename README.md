@@ -50,7 +50,7 @@ ProPlanet is an eco-friendly mobile application built with Flutter that helps us
 ### Setup
 1. Clone the repository:
 `ash
-git clone https://github.com/yourusername/proplanet.git
+git clone https://github.com/Mohammed-kaif-13/ProPlanet.git
 cd proplanet
 `
 
@@ -110,7 +110,6 @@ lib/
 - **fl_chart**: Charts and graphs
 
 ### Notifications
-- **awesome_notifications**: Rich notifications
 - **flutter_local_notifications**: Local notifications
 
 ### Utilities
@@ -148,7 +147,7 @@ lib/
 ## Environmental Impact Calculations
 
 The app provides estimated environmental impact based on completed activities:
-- **CO Saved**: 0.5 kg per point earned
+- **CO2 Saved**: 0.5 kg per point earned
 - **Water Saved**: 2.3 liters per point earned
 - **Energy Saved**: 1.2 kWh per point earned
 - **Tree Equivalent**: 1 tree per 50 points earned
@@ -182,14 +181,13 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - Icons by FontAwesome
 - Animations by Lottie
 - Charts by FL Chart
-- Notifications by Awesome Notifications
+- Notifications by Flutter Local Notifications
 
 ## Contact
 
 For questions or support, please reach out:
-- Email: support@proplanet.app
-- Website: https://proplanet.app
-- Twitter: @ProPlanetApp
+- Email: mohammedkaif1328@gmail.com
+- GitHub: https://github.com/Mohammed-kaif-13
 
 ---
 
