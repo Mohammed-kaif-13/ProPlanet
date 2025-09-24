@@ -1,0 +1,96 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper function to check if user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    // Helper function to check if user owns the resource
+    function isOwner(userId) {
+      return request.auth.uid == userId;
+    }
+    
+    // Users collection - users can only access their own data
+    match /users/{userId} {
+      allow read, write: if isAuthenticated() && isOwner(userId);
+    }
+    
+    // Activities collection - users can only access their own activities
+    match /activities/{activityId} {
+      allow read, write: if isAuthenticated() && isOwner(resource.data.userId);
+    }
+    
+    // User activities subcollection
+    match /users/{userId}/activities/{activityId} {
+      allow read, write: if isAuthenticated() && isOwner(userId);
+    }
+    
+    // Notifications collection
+    match /notifications/{notificationId} {
+      allow read, write: if isAuthenticated() && isOwner(resource.data.userId);
+    }
+    
+    // User notifications subcollection
+    match /users/{userId}/notifications/{notificationId} {
+      allow read, write: if isAuthenticated() && isOwner(userId);
+    }
+    
+    // Points collection
+    match /points/{pointId} {
+      allow read, write: if isAuthenticated() && isOwner(resource.data.userId);
+    }
+    
+    // User points subcollection
+    match /users/{userId}/points/{pointId} {
+      allow read, write: if isAuthenticated() && isOwner(userId);
+    }
+    
+    // Achievements collection
+    match /achievements/{achievementId} {
+      allow read, write: if isAuthenticated() && isOwner(resource.data.userId);
+    }
+    
+    // User achievements subcollection
+    match /users/{userId}/achievements/{achievementId} {
+      allow read, write: if isAuthenticated() && isOwner(userId);
+    }
+    
+    // Badges collection
+    match /badges/{badgeId} {
+      allow read, write: if isAuthenticated() && isOwner(resource.data.userId);
+    }
+    
+    // User badges subcollection
+    match /users/{userId}/badges/{badgeId} {
+      allow read, write: if isAuthenticated() && isOwner(userId);
+    }
+    
+    // Environmental impact collection
+    match /environmental_impact/{impactId} {
+      allow read, write: if isAuthenticated() && isOwner(resource.data.userId);
+    }
+    
+    // User environmental impact subcollection
+    match /users/{userId}/environmental_impact/{impactId} {
+      allow read, write: if isAuthenticated() && isOwner(userId);
+    }
+    
+    // Category points collection
+    match /category_points/{categoryId} {
+      allow read, write: if isAuthenticated() && isOwner(resource.data.userId);
+    }
+    
+    // User category points subcollection
+    match /users/{userId}/category_points/{categoryId} {
+      allow read, write: if isAuthenticated() && isOwner(userId);
+    }
+    
+    // Deny all other access
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

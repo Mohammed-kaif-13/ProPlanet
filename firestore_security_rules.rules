@@ -1,0 +1,225 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // ========================================
+    // HELPER FUNCTIONS
+    // ========================================
+    
+    // Check if user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    // Check if user owns the resource
+    function isOwner(userId) {
+      return request.auth.uid == userId;
+    }
+    
+    // Check if user is accessing their own data
+    function isOwnData() {
+      return isAuthenticated() && isOwner(resource.data.userId);
+    }
+    
+    // Check if user is creating their own data
+    function isCreatingOwnData() {
+      return isAuthenticated() && isOwner(request.resource.data.userId);
+    }
+    
+    // Validate user data structure
+    function isValidUser(userData) {
+      return userData.keys().hasAll(['name', 'email', 'totalPoints', 'level', 'streak', 'joinedAt']) &&
+             userData.name is string &&
+             userData.email is string &&
+             userData.totalPoints is int &&
+             userData.level is int &&
+             userData.streak is int &&
+             userData.joinedAt is timestamp &&
+             userData.totalPoints >= 0 &&
+             userData.level >= 1 &&
+             userData.streak >= 0;
+    }
+    
+    // Validate activity data structure
+    function isValidActivity(activityData) {
+      return activityData.keys().hasAll(['title', 'description', 'points', 'category', 'userId', 'completedAt']) &&
+             activityData.title is string &&
+             activityData.description is string &&
+             activityData.points is int &&
+             activityData.category is string &&
+             activityData.userId is string &&
+             activityData.completedAt is timestamp &&
+             activityData.points > 0 &&
+             activityData.title.size() > 0 &&
+             activityData.description.size() > 0;
+    }
+    
+    // Validate notification data structure
+    function isValidNotification(notificationData) {
+      return notificationData.keys().hasAll(['title', 'message', 'userId', 'createdAt', 'isRead']) &&
+             notificationData.title is string &&
+             notificationData.message is string &&
+             notificationData.userId is string &&
+             notificationData.createdAt is timestamp &&
+             notificationData.isRead is bool;
+    }
+    
+    // Check if request is from admin (you can add admin UIDs here)
+    function isAdmin() {
+      return request.auth.uid in ['YOUR_ADMIN_UID_HERE'];
+    }
+    
+    // ========================================
+    // COLLECTION RULES
+    // ========================================
+    
+    // Users collection - users can only access their own data
+    match /users/{userId} {
+      // Allow read and write only if user owns the document
+      allow read, write: if isAuthenticated() && isOwner(userId);
+      
+      // Allow create only if user is creating their own document with valid data
+      allow create: if isAuthenticated() && 
+                      isOwner(userId) && 
+                      isValidUser(request.resource.data);
+      
+      // Allow update only if user is updating their own document
+      allow update: if isAuthenticated() && 
+                      isOwner(userId) &&
+                      isValidUser(request.resource.data);
+    }
+    
+    // Activities collection - users can only access their own activities
+    match /activities/{activityId} {
+      allow read, write: if isAuthenticated() && isOwnData();
+      allow create: if isAuthenticated() && 
+                      isCreatingOwnData() &&
+                      isValidActivity(request.resource.data);
+      allow update: if isAuthenticated() && 
+                      isOwnData() &&
+                      isValidActivity(request.resource.data);
+    }
+    
+    // User activities subcollection
+    match /users/{userId}/activities/{activityId} {
+      allow read, write: if isAuthenticated() && isOwner(userId);
+      allow create: if isAuthenticated() && 
+                      isOwner(userId) &&
+                      isValidActivity(request.resource.data);
+      allow update: if isAuthenticated() && 
+                      isOwner(userId) &&
+                      isValidActivity(request.resource.data);
+    }
+    
+    // Notifications collection
+    match /notifications/{notificationId} {
+      allow read, write: if isAuthenticated() && isOwnData();
+      allow create: if isAuthenticated() && 
+                      isCreatingOwnData() &&
+                      isValidNotification(request.resource.data);
+      allow update: if isAuthenticated() && 
+                      isOwnData() &&
+                      isValidNotification(request.resource.data);
+    }
+    
+    // User notifications subcollection
+    match /users/{userId}/notifications/{notificationId} {
+      allow read, write: if isAuthenticated() && isOwner(userId);
+      allow create: if isAuthenticated() && 
+                      isOwner(userId) &&
+                      isValidNotification(request.resource.data);
+      allow update: if isAuthenticated() && 
+                      isOwner(userId) &&
+                      isValidNotification(request.resource.data);
+    }
+    
+    // Points collection
+    match /points/{pointId} {
+      allow read, write: if isAuthenticated() && isOwnData();
+      allow create: if isAuthenticated() && isCreatingOwnData();
+      allow update: if isAuthenticated() && isOwnData();
+    }
+    
+    // User points subcollection
+    match /users/{userId}/points/{pointId} {
+      allow read, write: if isAuthenticated() && isOwner(userId);
+      allow create: if isAuthenticated() && isOwner(userId);
+      allow update: if isAuthenticated() && isOwner(userId);
+    }
+    
+    // Achievements collection
+    match /achievements/{achievementId} {
+      allow read, write: if isAuthenticated() && isOwnData();
+      allow create: if isAuthenticated() && isCreatingOwnData();
+      allow update: if isAuthenticated() && isOwnData();
+    }
+    
+    // User achievements subcollection
+    match /users/{userId}/achievements/{achievementId} {
+      allow read, write: if isAuthenticated() && isOwner(userId);
+      allow create: if isAuthenticated() && isOwner(userId);
+      allow update: if isAuthenticated() && isOwner(userId);
+    }
+    
+    // Badges collection
+    match /badges/{badgeId} {
+      allow read, write: if isAuthenticated() && isOwnData();
+      allow create: if isAuthenticated() && isCreatingOwnData();
+      allow update: if isAuthenticated() && isOwnData();
+    }
+    
+    // User badges subcollection
+    match /users/{userId}/badges/{badgeId} {
+      allow read, write: if isAuthenticated() && isOwner(userId);
+      allow create: if isAuthenticated() && isOwner(userId);
+      allow update: if isAuthenticated() && isOwner(userId);
+    }
+    
+    // Environmental impact collection
+    match /environmental_impact/{impactId} {
+      allow read, write: if isAuthenticated() && isOwnData();
+      allow create: if isAuthenticated() && isCreatingOwnData();
+      allow update: if isAuthenticated() && isOwnData();
+    }
+    
+    // User environmental impact subcollection
+    match /users/{userId}/environmental_impact/{impactId} {
+      allow read, write: if isAuthenticated() && isOwner(userId);
+      allow create: if isAuthenticated() && isOwner(userId);
+      allow update: if isAuthenticated() && isOwner(userId);
+    }
+    
+    // Category points collection
+    match /category_points/{categoryId} {
+      allow read, write: if isAuthenticated() && isOwnData();
+      allow create: if isAuthenticated() && isCreatingOwnData();
+      allow update: if isAuthenticated() && isOwnData();
+    }
+    
+    // User category points subcollection
+    match /users/{userId}/category_points/{categoryId} {
+      allow read, write: if isAuthenticated() && isOwner(userId);
+      allow create: if isAuthenticated() && isOwner(userId);
+      allow update: if isAuthenticated() && isOwner(userId);
+    }
+    
+    // ========================================
+    // ADMIN RULES (Optional)
+    // ========================================
+    
+    // Admin can read all data (uncomment if you need admin access)
+    // match /{document=**} {
+    //   allow read: if isAdmin();
+    // }
+    
+    // ========================================
+    // DENY ALL OTHER ACCESS
+    // ========================================
+    
+    // Deny all other access
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

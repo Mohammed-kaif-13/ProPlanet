@@ -1,0 +1,155 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper functions for authentication and validation
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return request.auth.uid == userId;
+    }
+    
+    function isValidUser(userData) {
+      return userData.keys().hasAll(['name', 'email', 'totalPoints', 'level', 'streak', 'joinedAt']) &&
+             userData.name is string &&
+             userData.email is string &&
+             userData.totalPoints is int &&
+             userData.level is int &&
+             userData.streak is int &&
+             userData.joinedAt is timestamp;
+    }
+    
+    function isValidActivity(activityData) {
+      return activityData.keys().hasAll(['title', 'description', 'points', 'category', 'userId', 'completedAt']) &&
+             activityData.title is string &&
+             activityData.description is string &&
+             activityData.points is int &&
+             activityData.category is string &&
+             activityData.userId is string &&
+             activityData.completedAt is timestamp;
+    }
+    
+    // Users collection - users can only access their own data
+    match /users/{userId} {
+      allow read, write: if isAuthenticated() && isOwner(userId);
+      allow create: if isAuthenticated() && 
+                      isOwner(userId) && 
+                      isValidUser(resource.data);
+    }
+    
+    // Activities collection - users can only access their own activities
+    match /activities/{activityId} {
+      allow read, write: if isAuthenticated() && 
+                           isOwner(resource.data.userId);
+      allow create: if isAuthenticated() && 
+                      isValidActivity(resource.data) &&
+                      isOwner(resource.data.userId);
+    }
+    
+    // User activities subcollection - users can only access their own activities
+    match /users/{userId}/activities/{activityId} {
+      allow read, write: if isAuthenticated() && isOwner(userId);
+      allow create: if isAuthenticated() && 
+                      isOwner(userId) &&
+                      isValidActivity(resource.data);
+    }
+    
+    // Notifications collection - users can only access their own notifications
+    match /notifications/{notificationId} {
+      allow read, write: if isAuthenticated() && 
+                           isOwner(resource.data.userId);
+      allow create: if isAuthenticated() && 
+                      isOwner(resource.data.userId);
+    }
+    
+    // User notifications subcollection
+    match /users/{userId}/notifications/{notificationId} {
+      allow read, write: if isAuthenticated() && isOwner(userId);
+      allow create: if isAuthenticated() && 
+                      isOwner(userId);
+    }
+    
+    // Points collection - users can only access their own points
+    match /points/{pointId} {
+      allow read, write: if isAuthenticated() && 
+                           isOwner(resource.data.userId);
+      allow create: if isAuthenticated() && 
+                      isOwner(resource.data.userId);
+    }
+    
+    // User points subcollection
+    match /users/{userId}/points/{pointId} {
+      allow read, write: if isAuthenticated() && isOwner(userId);
+      allow create: if isAuthenticated() && 
+                      isOwner(userId);
+    }
+    
+    // Achievements collection - users can only access their own achievements
+    match /achievements/{achievementId} {
+      allow read, write: if isAuthenticated() && 
+                           isOwner(resource.data.userId);
+      allow create: if isAuthenticated() && 
+                      isOwner(resource.data.userId);
+    }
+    
+    // User achievements subcollection
+    match /users/{userId}/achievements/{achievementId} {
+      allow read, write: if isAuthenticated() && isOwner(userId);
+      allow create: if isAuthenticated() && 
+                      isOwner(userId);
+    }
+    
+    // Badges collection - users can only access their own badges
+    match /badges/{badgeId} {
+      allow read, write: if isAuthenticated() && 
+                           isOwner(resource.data.userId);
+      allow create: if isAuthenticated() && 
+                      isOwner(resource.data.userId);
+    }
+    
+    // User badges subcollection
+    match /users/{userId}/badges/{badgeId} {
+      allow read, write: if isAuthenticated() && isOwner(userId);
+      allow create: if isAuthenticated() && 
+                      isOwner(userId);
+    }
+    
+    // Environmental impact collection - users can only access their own data
+    match /environmental_impact/{impactId} {
+      allow read, write: if isAuthenticated() && 
+                           isOwner(resource.data.userId);
+      allow create: if isAuthenticated() && 
+                      isOwner(resource.data.userId);
+    }
+    
+    // User environmental impact subcollection
+    match /users/{userId}/environmental_impact/{impactId} {
+      allow read, write: if isAuthenticated() && isOwner(userId);
+      allow create: if isAuthenticated() && 
+                      isOwner(userId);
+    }
+    
+    // Category points collection - users can only access their own data
+    match /category_points/{categoryId} {
+      allow read, write: if isAuthenticated() && 
+                           isOwner(resource.data.userId);
+      allow create: if isAuthenticated() && 
+                      isOwner(resource.data.userId);
+    }
+    
+    // User category points subcollection
+    match /users/{userId}/category_points/{categoryId} {
+      allow read, write: if isAuthenticated() && isOwner(userId);
+      allow create: if isAuthenticated() && 
+                      isOwner(userId);
+    }
+    
+    // Deny all other access
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

@@ -49,12 +49,7 @@ class _HomeScreenState extends State<HomeScreen> {
         children: _screens,
       ),
       bottomNavigationBar: AnimatedBottomNavigationBar(
-        icons: const [
-          Icons.home,
-          Icons.eco,
-          Icons.leaderboard,
-          Icons.person,
-        ],
+        icons: const [Icons.home, Icons.eco, Icons.leaderboard, Icons.person],
         activeIndex: _currentIndex,
         gapLocation: GapLocation.none,
         notchSmoothness: NotchSmoothness.defaultEdge,
@@ -131,8 +126,10 @@ class HomeTab extends StatelessWidget {
       ),
       body: RefreshIndicator(
         onRefresh: () async {
-          await Provider.of<ActivityProvider>(context, listen: false)
-              .initializeActivities();
+          await Provider.of<ActivityProvider>(
+            context,
+            listen: false,
+          ).initializeActivities();
         },
         child: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
@@ -150,24 +147,24 @@ class HomeTab extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Welcome back, ! ',
-                        style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ).animate()
-                        .fadeIn(duration: 600.ms)
-                        .slideX(begin: -0.2, end: 0),
+                            'Welcome back, ! ',
+                            style: Theme.of(context).textTheme.headlineMedium
+                                ?.copyWith(fontWeight: FontWeight.bold),
+                          )
+                          .animate()
+                          .fadeIn(duration: 600.ms)
+                          .slideX(begin: -0.2, end: 0),
 
                       const SizedBox(height: 8),
 
                       Text(
-                        'Ready to make a positive impact today?',
-                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          color: Colors.grey[600],
-                        ),
-                      ).animate()
-                        .fadeIn(delay: 200.ms, duration: 600.ms)
-                        .slideX(begin: -0.2, end: 0),
+                            'Ready to make a positive impact today?',
+                            style: Theme.of(context).textTheme.bodyLarge
+                                ?.copyWith(color: Colors.grey[600]),
+                          )
+                          .animate()
+                          .fadeIn(delay: 200.ms, duration: 600.ms)
+                          .slideX(begin: -0.2, end: 0),
                     ],
                   );
                 },
@@ -185,35 +182,38 @@ class HomeTab extends StatelessWidget {
                     children: [
                       Expanded(
                         child: StatsCard(
-                          title: 'Total Points',
-                          value: '',
-                          icon: Icons.star,
-                          color: Colors.amber,
-                        ).animate()
-                          .fadeIn(delay: 400.ms, duration: 600.ms)
-                          .slideY(begin: 0.2, end: 0),
+                              title: 'Total Points',
+                              value: '',
+                              icon: Icons.star,
+                              color: Colors.amber,
+                            )
+                            .animate()
+                            .fadeIn(delay: 400.ms, duration: 600.ms)
+                            .slideY(begin: 0.2, end: 0),
                       ),
                       const SizedBox(width: 12),
                       Expanded(
                         child: StatsCard(
-                          title: 'Level',
-                          value: '',
-                          icon: Icons.trending_up,
-                          color: Colors.blue,
-                        ).animate()
-                          .fadeIn(delay: 500.ms, duration: 600.ms)
-                          .slideY(begin: 0.2, end: 0),
+                              title: 'Level',
+                              value: '',
+                              icon: Icons.trending_up,
+                              color: Colors.blue,
+                            )
+                            .animate()
+                            .fadeIn(delay: 500.ms, duration: 600.ms)
+                            .slideY(begin: 0.2, end: 0),
                       ),
                       const SizedBox(width: 12),
                       Expanded(
                         child: StatsCard(
-                          title: 'Streak',
-                          value: '',
-                          icon: Icons.local_fire_department,
-                          color: Colors.orange,
-                        ).animate()
-                          .fadeIn(delay: 600.ms, duration: 600.ms)
-                          .slideY(begin: 0.2, end: 0),
+                              title: 'Streak',
+                              value: '',
+                              icon: Icons.local_fire_department,
+                              color: Colors.orange,
+                            )
+                            .animate()
+                            .fadeIn(delay: 600.ms, duration: 600.ms)
+                            .slideY(begin: 0.2, end: 0),
                       ),
                     ],
                   );
@@ -228,8 +228,7 @@ class HomeTab extends StatelessWidget {
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
-              ).animate()
-                .fadeIn(delay: 700.ms, duration: 600.ms),
+              ).animate().fadeIn(delay: 700.ms, duration: 600.ms),
 
               const SizedBox(height: 16),
 
@@ -237,28 +236,30 @@ class HomeTab extends StatelessWidget {
                 children: [
                   Expanded(
                     child: QuickActionButton(
-                      title: 'Start Activity',
-                      icon: FontAwesomeIcons.play,
-                      color: Colors.green,
-                      onTap: () {
-                        Navigator.of(context).pushNamed('/activities');
-                      },
-                    ).animate()
-                      .fadeIn(delay: 800.ms, duration: 600.ms)
-                      .slideX(begin: -0.2, end: 0),
+                          title: 'Start Activity',
+                          icon: FontAwesomeIcons.play,
+                          color: Colors.green,
+                          onTap: () {
+                            Navigator.of(context).pushNamed('/activities');
+                          },
+                        )
+                        .animate()
+                        .fadeIn(delay: 800.ms, duration: 600.ms)
+                        .slideX(begin: -0.2, end: 0),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: QuickActionButton(
-                      title: 'View Progress',
-                      icon: FontAwesomeIcons.chartLine,
-                      color: Colors.blue,
-                      onTap: () {
-                        Navigator.of(context).pushNamed('/profile');
-                      },
-                    ).animate()
-                      .fadeIn(delay: 900.ms, duration: 600.ms)
-                      .slideX(begin: 0.2, end: 0),
+                          title: 'View Progress',
+                          icon: FontAwesomeIcons.chartLine,
+                          color: Colors.blue,
+                          onTap: () {
+                            Navigator.of(context).pushNamed('/profile');
+                          },
+                        )
+                        .animate()
+                        .fadeIn(delay: 900.ms, duration: 600.ms)
+                        .slideX(begin: 0.2, end: 0),
                   ),
                 ],
               ),
@@ -271,8 +272,7 @@ class HomeTab extends StatelessWidget {
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
-              ).animate()
-                .fadeIn(delay: 1000.ms, duration: 600.ms),
+              ).animate().fadeIn(delay: 1000.ms, duration: 600.ms),
 
               const SizedBox(height: 16),
 
@@ -282,58 +282,59 @@ class HomeTab extends StatelessWidget {
 
                   if (todayActivities.isEmpty) {
                     return Card(
-                      child: Padding(
-                        padding: const EdgeInsets.all(24),
-                        child: Column(
-                          children: [
-                            Icon(
-                              Icons.eco,
-                              size: 48,
-                              color: Colors.grey[400],
+                          child: Padding(
+                            padding: const EdgeInsets.all(24),
+                            child: Column(
+                              children: [
+                                Icon(
+                                  Icons.eco,
+                                  size: 48,
+                                  color: Colors.grey[400],
+                                ),
+                                const SizedBox(height: 16),
+                                Text(
+                                  'No activities today yet',
+                                  style: Theme.of(context).textTheme.titleMedium
+                                      ?.copyWith(color: Colors.grey[600]),
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  'Start your first eco-friendly activity!',
+                                  style: Theme.of(context).textTheme.bodyMedium
+                                      ?.copyWith(color: Colors.grey[500]),
+                                ),
+                                const SizedBox(height: 16),
+                                ElevatedButton(
+                                  onPressed: () {
+                                    Navigator.of(
+                                      context,
+                                    ).pushNamed('/activities');
+                                  },
+                                  child: const Text('Browse Activities'),
+                                ),
+                              ],
                             ),
-                            const SizedBox(height: 16),
-                            Text(
-                              'No activities today yet',
-                              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                color: Colors.grey[600],
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              'Start your first eco-friendly activity!',
-                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                color: Colors.grey[500],
-                              ),
-                            ),
-                            const SizedBox(height: 16),
-                            ElevatedButton(
-                              onPressed: () {
-                                Navigator.of(context).pushNamed('/activities');
-                              },
-                              child: const Text('Browse Activities'),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ).animate()
-                      .fadeIn(delay: 1100.ms, duration: 600.ms)
-                      .slideY(begin: 0.2, end: 0);
+                          ),
+                        )
+                        .animate()
+                        .fadeIn(delay: 1100.ms, duration: 600.ms)
+                        .slideY(begin: 0.2, end: 0);
                   }
 
                   return Column(
-                    children: todayActivities.map((userActivity) {
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 12),
-                        child: ActivityCard(
-                          userActivity: userActivity,
-                          onTap: () {
-                            _showActivityDetails(context, userActivity);
-                          },
-                        ),
-                      );
-                    }).toList(),
-                  ).animate()
-                    .fadeIn(delay: 1100.ms, duration: 600.ms);
+                    children:
+                        todayActivities.map((userActivity) {
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 12),
+                            child: ActivityCard(
+                              userActivity: userActivity,
+                              onTap: () {
+                                _showActivityDetails(context, userActivity);
+                              },
+                            ),
+                          );
+                        }).toList(),
+                  ).animate().fadeIn(delay: 1100.ms, duration: 600.ms);
                 },
               ),
 
@@ -345,14 +346,14 @@ class HomeTab extends StatelessWidget {
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
-              ).animate()
-                .fadeIn(delay: 1200.ms, duration: 600.ms),
+              ).animate().fadeIn(delay: 1200.ms, duration: 600.ms),
 
               const SizedBox(height: 16),
 
               Consumer<ActivityProvider>(
                 builder: (context, activityProvider, child) {
-                  final recommendedActivities = activityProvider.getRecommendedActivities();
+                  final recommendedActivities =
+                      activityProvider.getRecommendedActivities();
 
                   return SizedBox(
                     height: 200,
@@ -382,7 +383,9 @@ class HomeTab extends StatelessWidget {
                                     const SizedBox(height: 8),
                                     Text(
                                       activity.title,
-                                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                                      style: Theme.of(
+                                        context,
+                                      ).textTheme.titleSmall?.copyWith(
                                         fontWeight: FontWeight.bold,
                                       ),
                                       maxLines: 2,
@@ -391,7 +394,9 @@ class HomeTab extends StatelessWidget {
                                     const SizedBox(height: 4),
                                     Text(
                                       ' points',
-                                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                      style: Theme.of(
+                                        context,
+                                      ).textTheme.bodySmall?.copyWith(
                                         color: Colors.green,
                                         fontWeight: FontWeight.w500,
                                       ),
@@ -399,9 +404,10 @@ class HomeTab extends StatelessWidget {
                                     const Spacer(),
                                     Text(
                                       activity.description,
-                                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                        color: Colors.grey[600],
-                                      ),
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodySmall
+                                          ?.copyWith(color: Colors.grey[600]),
                                       maxLines: 3,
                                       overflow: TextOverflow.ellipsis,
                                     ),
@@ -413,8 +419,7 @@ class HomeTab extends StatelessWidget {
                         );
                       },
                     ),
-                  ).animate()
-                    .fadeIn(delay: 1300.ms, duration: 600.ms);
+                  ).animate().fadeIn(delay: 1300.ms, duration: 600.ms);
                 },
               ),
 
@@ -462,9 +467,8 @@ class HomeTab extends StatelessWidget {
                         children: [
                           Text(
                             'Notifications',
-                            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                              fontWeight: FontWeight.bold,
-                            ),
+                            style: Theme.of(context).textTheme.headlineSmall
+                                ?.copyWith(fontWeight: FontWeight.bold),
                           ),
                           if (notifications.isNotEmpty)
                             TextButton(
@@ -477,62 +481,72 @@ class HomeTab extends StatelessWidget {
                       ),
                     ),
                     Expanded(
-                      child: notifications.isEmpty
-                          ? Center(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    Icons.notifications_none,
-                                    size: 64,
-                                    color: Colors.grey[400],
-                                  ),
-                                  const SizedBox(height: 16),
-                                  Text(
-                                    'No notifications yet',
-                                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                      color: Colors.grey[600],
+                      child:
+                          notifications.isEmpty
+                              ? Center(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.notifications_none,
+                                      size: 64,
+                                      color: Colors.grey[400],
                                     ),
-                                  ),
-                                ],
+                                    const SizedBox(height: 16),
+                                    Text(
+                                      'No notifications yet',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleMedium
+                                          ?.copyWith(color: Colors.grey[600]),
+                                    ),
+                                  ],
+                                ),
+                              )
+                              : ListView.builder(
+                                controller: scrollController,
+                                itemCount: notifications.length,
+                                itemBuilder: (context, index) {
+                                  final notification = notifications[index];
+                                  return ListTile(
+                                    leading: CircleAvatar(
+                                      backgroundColor:
+                                          notification.isRead
+                                              ? Colors.grey[300]
+                                              : Theme.of(context).primaryColor,
+                                      child: Icon(
+                                        _getNotificationIcon(notification.type),
+                                        color:
+                                            notification.isRead
+                                                ? Colors.grey[600]
+                                                : Colors.white,
+                                      ),
+                                    ),
+                                    title: Text(
+                                      notification.title,
+                                      style: TextStyle(
+                                        fontWeight:
+                                            notification.isRead
+                                                ? FontWeight.normal
+                                                : FontWeight.bold,
+                                      ),
+                                    ),
+                                    subtitle: Text(notification.body),
+                                    trailing: Text(
+                                      _formatNotificationTime(
+                                        notification.scheduledTime,
+                                      ),
+                                      style:
+                                          Theme.of(context).textTheme.bodySmall,
+                                    ),
+                                    onTap: () {
+                                      notificationProvider.markAsRead(
+                                        notification.id,
+                                      );
+                                    },
+                                  );
+                                },
                               ),
-                            )
-                          : ListView.builder(
-                              controller: scrollController,
-                              itemCount: notifications.length,
-                              itemBuilder: (context, index) {
-                                final notification = notifications[index];
-                                return ListTile(
-                                  leading: CircleAvatar(
-                                    backgroundColor: notification.isRead
-                                        ? Colors.grey[300]
-                                        : Theme.of(context).primaryColor,
-                                    child: Icon(
-                                      _getNotificationIcon(notification.type),
-                                      color: notification.isRead
-                                          ? Colors.grey[600]
-                                          : Colors.white,
-                                    ),
-                                  ),
-                                  title: Text(
-                                    notification.title,
-                                    style: TextStyle(
-                                      fontWeight: notification.isRead
-                                          ? FontWeight.normal
-                                          : FontWeight.bold,
-                                    ),
-                                  ),
-                                  subtitle: Text(notification.body),
-                                  trailing: Text(
-                                    _formatNotificationTime(notification.scheduledTime),
-                                    style: Theme.of(context).textTheme.bodySmall,
-                                  ),
-                                  onTap: () {
-                                    notificationProvider.markAsRead(notification.id);
-                                  },
-                                );
-                              },
-                            ),
                     ),
                   ],
                 );
@@ -553,7 +567,8 @@ class HomeTab extends StatelessWidget {
       case NotificationType.activityReminder:
         return Icons.alarm;
       case NotificationType.challenge:
-        return Icons.sports_esports; // Changed from Icons.challenge which doesn't exist
+        return Icons
+            .sports_esports; // Changed from Icons.challenge which doesn't exist
       case NotificationType.social:
         return Icons.people;
       case NotificationType.tips:
@@ -579,62 +594,76 @@ class HomeTab extends StatelessWidget {
   void _showActivityDetails(BuildContext context, UserActivity userActivity) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(userActivity.activity.title),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(userActivity.activity.description),
-            const SizedBox(height: 16),
-            Row(
+      builder:
+          (context) => AlertDialog(
+            title: Text(userActivity.activity.title),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(Icons.star, color: Colors.amber, size: 16),
-                const SizedBox(width: 4),
-                Text(' points'),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Row(
-              children: [
-                Icon(
-                  userActivity.isCompleted ? Icons.check_circle : Icons.pending,
-                  color: userActivity.isCompleted ? Colors.green : Colors.orange,
-                  size: 16,
+                Text(userActivity.activity.description),
+                const SizedBox(height: 16),
+                Row(
+                  children: [
+                    Icon(Icons.star, color: Colors.amber, size: 16),
+                    const SizedBox(width: 4),
+                    Text(' points'),
+                  ],
                 ),
-                const SizedBox(width: 4),
-                Text(userActivity.isCompleted ? 'Completed' : 'In Progress'),
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    Icon(
+                      userActivity.isCompleted
+                          ? Icons.check_circle
+                          : Icons.pending,
+                      color:
+                          userActivity.isCompleted
+                              ? Colors.green
+                              : Colors.orange,
+                      size: 16,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      userActivity.isCompleted ? 'Completed' : 'In Progress',
+                    ),
+                  ],
+                ),
               ],
             ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Close'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('Close'),
+              ),
+              if (!userActivity.isCompleted)
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    _completeActivity(context, userActivity);
+                  },
+                  child: const Text('Complete'),
+                ),
+            ],
           ),
-          if (!userActivity.isCompleted)
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                _completeActivity(context, userActivity);
-              },
-              child: const Text('Complete'),
-            ),
-        ],
-      ),
     );
   }
 
   void _startActivity(BuildContext context, EcoActivity activity) async {
     final userProvider = Provider.of<UserProvider>(context, listen: false);
-    final activityProvider = Provider.of<ActivityProvider>(context, listen: false);
-    
+    final activityProvider = Provider.of<ActivityProvider>(
+      context,
+      listen: false,
+    );
+
     if (userProvider.currentUser == null) return;
 
     try {
-      await activityProvider.startActivity(activity, userProvider.currentUser!.id);
-      
+      await activityProvider.startActivity(
+        activity,
+        userProvider.currentUser!.id,
+      );
+
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -650,33 +679,42 @@ class HomeTab extends StatelessWidget {
       }
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error starting activity: ')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error starting activity: ')));
       }
     }
   }
 
-  void _completeActivity(BuildContext context, UserActivity userActivity) async {
-    final activityProvider = Provider.of<ActivityProvider>(context, listen: false);
+  void _completeActivity(
+    BuildContext context,
+    UserActivity userActivity,
+  ) async {
+    final activityProvider = Provider.of<ActivityProvider>(
+      context,
+      listen: false,
+    );
     final userProvider = Provider.of<UserProvider>(context, listen: false);
-    final notificationProvider = Provider.of<NotificationProvider>(context, listen: false);
-    
+    final notificationProvider = Provider.of<NotificationProvider>(
+      context,
+      listen: false,
+    );
+
     try {
       await activityProvider.completeActivity(userActivity.id);
-      
+
       // Add points to user
       await userProvider.addPoints(
         userActivity.activity.points,
         userActivity.activity.category.toString().split('.').last,
       );
-      
+
       // Send achievement notification
       await notificationProvider.sendAchievementNotification(
         ' Activity Completed!',
         'You earned  points for completing ',
       );
-      
+
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -687,9 +725,9 @@ class HomeTab extends StatelessWidget {
       }
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error completing activity: ')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error completing activity: ')));
       }
     }
   }

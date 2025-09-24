@@ -15,11 +15,11 @@ class ActivityProvider with ChangeNotifier {
   String? get error => _error;
 
   // Get completed activities
-  List<UserActivity> get completedActivities => 
+  List<UserActivity> get completedActivities =>
       _userActivities.where((activity) => activity.isCompleted).toList();
 
   // Get pending activities
-  List<UserActivity> get pendingActivities => 
+  List<UserActivity> get pendingActivities =>
       _userActivities.where((activity) => !activity.isCompleted).toList();
 
   // Get today's activities
@@ -27,25 +27,29 @@ class ActivityProvider with ChangeNotifier {
     final today = DateTime.now();
     return _userActivities.where((activity) {
       return activity.startTime.year == today.year &&
-             activity.startTime.month == today.month &&
-             activity.startTime.day == today.day;
+          activity.startTime.month == today.month &&
+          activity.startTime.day == today.day;
     }).toList();
   }
 
   // Get total points earned
   int get totalPointsEarned {
-    return completedActivities.fold(0, (total, activity) => total + activity.activity.points);
+    return completedActivities.fold(
+      0,
+      (total, activity) => total + activity.activity.points,
+    );
   }
 
   // Get points by category
   Map<ActivityCategory, int> get pointsByCategory {
     final Map<ActivityCategory, int> categoryPoints = {};
-    
+
     for (final activity in completedActivities) {
       final category = activity.activity.category;
-      categoryPoints[category] = (categoryPoints[category] ?? 0) + activity.activity.points;
+      categoryPoints[category] =
+          (categoryPoints[category] ?? 0) + activity.activity.points;
     }
-    
+
     return categoryPoints;
   }
 
@@ -73,19 +77,22 @@ class ActivityProvider with ChangeNotifier {
       EcoActivity(
         id: 'transport_1',
         title: 'Walk or Bike Instead of Drive',
-        description: 'Choose walking or biking for short trips instead of using a car',
+        description:
+            'Choose walking or biking for short trips instead of using a car',
         category: ActivityCategory.transport,
         points: 20,
         icon: '',
         estimatedTime: const Duration(minutes: 30),
         tags: ['transport', 'health', 'carbon-reduction'],
         difficulty: 'easy',
-        instructions: 'For trips under 2 miles, try walking or biking instead of driving.',
+        instructions:
+            'For trips under 2 miles, try walking or biking instead of driving.',
       ),
       EcoActivity(
         id: 'transport_2',
         title: 'Use Public Transportation',
-        description: 'Take the bus, train, or other public transport instead of driving',
+        description:
+            'Take the bus, train, or other public transport instead of driving',
         category: ActivityCategory.transport,
         points: 15,
         icon: '',
@@ -97,7 +104,8 @@ class ActivityProvider with ChangeNotifier {
       EcoActivity(
         id: 'transport_3',
         title: 'Carpool or Rideshare',
-        description: 'Share a ride with others to reduce individual carbon footprint',
+        description:
+            'Share a ride with others to reduce individual carbon footprint',
         category: ActivityCategory.transport,
         points: 12,
         icon: '',
@@ -106,19 +114,21 @@ class ActivityProvider with ChangeNotifier {
         difficulty: 'easy',
         instructions: 'Coordinate with friends, family, or use rideshare apps.',
       ),
-      
+
       // Energy Activities
       EcoActivity(
         id: 'energy_1',
         title: 'Switch to LED Bulbs',
-        description: 'Replace traditional bulbs with energy-efficient LED bulbs',
+        description:
+            'Replace traditional bulbs with energy-efficient LED bulbs',
         category: ActivityCategory.energy,
         points: 25,
         icon: '',
         estimatedTime: const Duration(minutes: 15),
         tags: ['energy', 'home', 'savings'],
         difficulty: 'easy',
-        instructions: 'Replace one or more incandescent bulbs with LED alternatives.',
+        instructions:
+            'Replace one or more incandescent bulbs with LED alternatives.',
       ),
       EcoActivity(
         id: 'energy_2',
@@ -130,21 +140,24 @@ class ActivityProvider with ChangeNotifier {
         estimatedTime: const Duration(minutes: 10),
         tags: ['energy', 'home', 'savings'],
         difficulty: 'easy',
-        instructions: 'Unplug chargers, TVs, and other electronics when not actively using them.',
+        instructions:
+            'Unplug chargers, TVs, and other electronics when not actively using them.',
       ),
       EcoActivity(
         id: 'energy_3',
         title: 'Adjust Thermostat by 2 Degrees',
-        description: 'Lower heating or raise cooling by 2 degrees to save energy',
+        description:
+            'Lower heating or raise cooling by 2 degrees to save energy',
         category: ActivityCategory.energy,
         points: 15,
         icon: '',
         estimatedTime: const Duration(minutes: 2),
         tags: ['energy', 'home', 'comfort'],
         difficulty: 'easy',
-        instructions: 'Adjust your thermostat 2 degrees lower in winter, higher in summer.',
+        instructions:
+            'Adjust your thermostat 2 degrees lower in winter, higher in summer.',
       ),
-      
+
       // Waste Activities
       EcoActivity(
         id: 'waste_1',
@@ -156,7 +169,8 @@ class ActivityProvider with ChangeNotifier {
         estimatedTime: const Duration(minutes: 20),
         tags: ['waste', 'composting', 'gardening'],
         difficulty: 'medium',
-        instructions: 'Set up a compost bin and start collecting organic waste.',
+        instructions:
+            'Set up a compost bin and start collecting organic waste.',
       ),
       EcoActivity(
         id: 'waste_2',
@@ -168,7 +182,8 @@ class ActivityProvider with ChangeNotifier {
         estimatedTime: const Duration(minutes: 5),
         tags: ['waste', 'shopping', 'plastic-reduction'],
         difficulty: 'easy',
-        instructions: 'Remember to bring reusable bags for your next shopping trip.',
+        instructions:
+            'Remember to bring reusable bags for your next shopping trip.',
       ),
       EcoActivity(
         id: 'waste_3',
@@ -180,9 +195,10 @@ class ActivityProvider with ChangeNotifier {
         estimatedTime: const Duration(minutes: 15),
         tags: ['waste', 'recycling', 'sorting'],
         difficulty: 'easy',
-        instructions: 'Check local recycling guidelines and sort materials correctly.',
+        instructions:
+            'Check local recycling guidelines and sort materials correctly.',
       ),
-      
+
       // Water Activities
       EcoActivity(
         id: 'water_1',
@@ -220,24 +236,27 @@ class ActivityProvider with ChangeNotifier {
         difficulty: 'medium',
         instructions: 'Install a rain barrel or collection system.',
       ),
-      
+
       // Food Activities
       EcoActivity(
         id: 'food_1',
         title: 'Eat a Plant-Based Meal',
-        description: 'Choose a vegetarian or vegan meal to reduce carbon footprint',
+        description:
+            'Choose a vegetarian or vegan meal to reduce carbon footprint',
         category: ActivityCategory.food,
         points: 18,
         icon: '',
         estimatedTime: const Duration(minutes: 45),
         tags: ['food', 'plant-based', 'health'],
         difficulty: 'easy',
-        instructions: 'Try a delicious plant-based recipe for one of your meals today.',
+        instructions:
+            'Try a delicious plant-based recipe for one of your meals today.',
       ),
       EcoActivity(
         id: 'food_2',
         title: 'Buy Local Produce',
-        description: 'Purchase fruits and vegetables from local farmers or markets',
+        description:
+            'Purchase fruits and vegetables from local farmers or markets',
         category: ActivityCategory.food,
         points: 22,
         icon: '',
@@ -256,9 +275,10 @@ class ActivityProvider with ChangeNotifier {
         estimatedTime: const Duration(minutes: 30),
         tags: ['food', 'planning', 'waste-reduction'],
         difficulty: 'easy',
-        instructions: 'Plan your meals for the week and use up leftovers creatively.',
+        instructions:
+            'Plan your meals for the week and use up leftovers creatively.',
       ),
-      
+
       // Nature Activities
       EcoActivity(
         id: 'nature_1',
@@ -270,7 +290,8 @@ class ActivityProvider with ChangeNotifier {
         estimatedTime: const Duration(minutes: 60),
         tags: ['nature', 'planting', 'carbon-absorption'],
         difficulty: 'medium',
-        instructions: 'Plant a tree, flower, or herb in your garden or a suitable location.',
+        instructions:
+            'Plant a tree, flower, or herb in your garden or a suitable location.',
       ),
       EcoActivity(
         id: 'nature_2',
@@ -294,7 +315,8 @@ class ActivityProvider with ChangeNotifier {
         estimatedTime: const Duration(minutes: 45),
         tags: ['nature', 'wildlife', 'habitat'],
         difficulty: 'medium',
-        instructions: 'Create a small habitat for local wildlife in your yard or balcony.',
+        instructions:
+            'Create a small habitat for local wildlife in your yard or balcony.',
       ),
     ];
 
@@ -309,12 +331,11 @@ class ActivityProvider with ChangeNotifier {
     try {
       final prefs = await SharedPreferences.getInstance();
       final userActivitiesJson = prefs.getString('user_activities');
-      
+
       if (userActivitiesJson != null) {
         final List<dynamic> activitiesList = jsonDecode(userActivitiesJson);
-        _userActivities = activitiesList
-            .map((json) => UserActivity.fromJson(json))
-            .toList();
+        _userActivities =
+            activitiesList.map((json) => UserActivity.fromJson(json)).toList();
       }
     } catch (e) {
       // Handle error silently and start with empty list
@@ -335,7 +356,10 @@ class ActivityProvider with ChangeNotifier {
   }
 
   // Start an activity
-  Future<UserActivity> startActivity(EcoActivity activity, String userId) async {
+  Future<UserActivity> startActivity(
+    EcoActivity activity,
+    String userId,
+  ) async {
     final userActivity = UserActivity(
       id: 'user_activity_',
       userId: userId,
@@ -353,7 +377,11 @@ class ActivityProvider with ChangeNotifier {
   }
 
   // Complete an activity
-  Future<void> completeActivity(String activityId, {String? notes, List<String>? photos}) async {
+  Future<void> completeActivity(
+    String activityId, {
+    String? notes,
+    List<String>? photos,
+  }) async {
     final index = _userActivities.indexWhere((a) => a.id == activityId);
     if (index != -1) {
       _userActivities[index] = _userActivities[index].copyWith(
@@ -388,22 +416,31 @@ class ActivityProvider with ChangeNotifier {
 
   // Get activities by category
   List<EcoActivity> getActivitiesByCategory(ActivityCategory category) {
-    return _availableActivities.where((activity) => activity.category == category).toList();
+    return _availableActivities
+        .where((activity) => activity.category == category)
+        .toList();
   }
 
   // Get recommended activities based on user's history
   List<EcoActivity> getRecommendedActivities({int limit = 5}) {
     // Simple recommendation: return activities not recently completed
-    final recentlyCompleted = completedActivities
-        .where((ua) => ua.completedTime != null && 
-               ua.completedTime!.isAfter(DateTime.now().subtract(const Duration(days: 7))))
-        .map((ua) => ua.activityId)
-        .toSet();
+    final recentlyCompleted =
+        completedActivities
+            .where(
+              (ua) =>
+                  ua.completedTime != null &&
+                  ua.completedTime!.isAfter(
+                    DateTime.now().subtract(const Duration(days: 7)),
+                  ),
+            )
+            .map((ua) => ua.activityId)
+            .toSet();
 
-    final recommended = _availableActivities
-        .where((activity) => !recentlyCompleted.contains(activity.id))
-        .take(limit)
-        .toList();
+    final recommended =
+        _availableActivities
+            .where((activity) => !recentlyCompleted.contains(activity.id))
+            .take(limit)
+            .toList();
 
     return recommended;
   }
@@ -419,15 +456,18 @@ class ActivityProvider with ChangeNotifier {
     if (completedActivities.isEmpty) return 0;
 
     final today = DateTime.now();
-    final completedDates = completedActivities
-        .where((activity) => activity.completedTime != null)
-        .map((activity) => DateTime(
-              activity.completedTime!.year,
-              activity.completedTime!.month,
-              activity.completedTime!.day,
-            ))
-        .toSet()
-        .toList();
+    final completedDates =
+        completedActivities
+            .where((activity) => activity.completedTime != null)
+            .map(
+              (activity) => DateTime(
+                activity.completedTime!.year,
+                activity.completedTime!.month,
+                activity.completedTime!.day,
+              ),
+            )
+            .toSet()
+            .toList();
 
     completedDates.sort((a, b) => b.compareTo(a));
 
@@ -435,8 +475,10 @@ class ActivityProvider with ChangeNotifier {
     DateTime currentDate = DateTime(today.year, today.month, today.day);
 
     for (final date in completedDates) {
-      if (date.isAtSameMomentAs(currentDate) || 
-          date.isAtSameMomentAs(currentDate.subtract(const Duration(days: 1)))) {
+      if (date.isAtSameMomentAs(currentDate) ||
+          date.isAtSameMomentAs(
+            currentDate.subtract(const Duration(days: 1)),
+          )) {
         streak++;
         currentDate = currentDate.subtract(const Duration(days: 1));
       } else {

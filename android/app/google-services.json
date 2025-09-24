@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "265975639920",
+    "project_id": "proplanet-5987f",
+    "storage_bucket": "proplanet-5987f.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:265975639920:android:0a1507f8621f4dab3069b5",
+        "android_client_info": {
+          "package_name": "com.example.proplanet"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "265975639920-igfucrsimh9h7p7oub2vjsn1kg8ksj3f.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.proplanet",
+            "certificate_hash": "d3b9d61dca55ff5536f1df7a4ba4ba1c436ea4c6"
+          }
+        },
+        {
+          "client_id": "265975639920-omv2vfv6heoem9esskcntssei5n7ovsc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDSPf0HJjBBPp44y9twULm6sW7T1yiRrR4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "265975639920-omv2vfv6heoem9esskcntssei5n7ovsc.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "265975639920-v5douomi509llchnn9hq8ask1ars6ugb.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.proplanet"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
