@@ -1,4 +1,6 @@
-﻿enum ActivityCategory {
+﻿import 'package:cloud_firestore/cloud_firestore.dart';
+
+enum ActivityCategory {
   transport,
   energy,
   waste,
@@ -8,11 +10,7 @@
   nature,
 }
 
-enum ActivityStatus {
-  pending,
-  completed,
-  verified,
-}
+enum ActivityStatus { pending, completed, verified }
 
 class EcoActivity {
   final String id;
@@ -108,8 +106,10 @@ class UserActivity {
       userId: json['userId'] ?? '',
       activityId: json['activityId'] ?? '',
       activity: EcoActivity.fromJson(json['activity'] ?? {}),
-      startTime: DateTime.parse(json['startTime'] ?? DateTime.now().toIso8601String()),
-      completedTime: json['completedTime'] != null 
+      startTime: DateTime.parse(
+        json['startTime'] ?? DateTime.now().toIso8601String(),
+      ),
+      completedTime: json['completedTime'] != null
           ? DateTime.parse(json['completedTime'])
           : null,
       status: ActivityStatus.values.firstWhere(
@@ -135,6 +135,72 @@ class UserActivity {
       'photos': photos,
       'metadata': metadata,
     };
+  }
+
+  // Convert UserActivity to Firestore format
+  Map<String, dynamic> toFirestore() {
+    return {
+      'id': id,
+      'userId': userId,
+      'activityId': activityId,
+      'activity': activity.toJson(),
+      'startTime': Timestamp.fromDate(startTime),
+      'completedTime':
+          completedTime != null ? Timestamp.fromDate(completedTime!) : null,
+      'status': status.toString().split('.').last,
+      'notes': notes,
+      'photos': photos,
+      'metadata': metadata,
+      'createdAt': Timestamp.now(),
+      'updatedAt': Timestamp.now(),
+    };
+  }
+
+  // Create UserActivity from Firestore document
+  factory UserActivity.fromFirestore(DocumentSnapshot doc) {
+    try {
+      final data = doc.data() as Map<String, dynamic>?;
+      if (data == null) {
+        throw Exception('Document data is null');
+      }
+
+      return UserActivity(
+        id: data['id'] ?? doc.id,
+        userId: data['userId'] ?? '',
+        activityId: data['activityId'] ?? '',
+        activity: EcoActivity.fromJson(
+            Map<String, dynamic>.from(data['activity'] ?? {})),
+        startTime: (data['startTime'] as Timestamp).toDate(),
+        completedTime: data['completedTime'] != null
+            ? (data['completedTime'] as Timestamp).toDate()
+            : null,
+        status: ActivityStatus.values.firstWhere(
+          (e) => e.toString().split('.').last == data['status'],
+          orElse: () => ActivityStatus.pending,
+        ),
+        notes: data['notes'],
+        photos: List<String>.from(data['photos'] ?? []),
+        metadata: data['metadata'],
+      );
+    } catch (e) {
+      print('Error creating UserActivity from Firestore: $e');
+      // Return a default UserActivity
+      return UserActivity(
+        id: doc.id,
+        userId: '',
+        activityId: '',
+        activity: EcoActivity(
+          id: '',
+          title: 'Unknown Activity',
+          description: '',
+          category: ActivityCategory.transport,
+          points: 0,
+          icon: '❓',
+          estimatedTime: const Duration(minutes: 5),
+        ),
+        startTime: DateTime.now(),
+      );
+    }
   }
 
   UserActivity copyWith({
@@ -163,8 +229,9 @@ class UserActivity {
     );
   }
 
-  bool get isCompleted => status == ActivityStatus.completed || status == ActivityStatus.verified;
-  
+  bool get isCompleted =>
+      status == ActivityStatus.completed || status == ActivityStatus.verified;
+
   Duration get duration {
     if (completedTime != null) {
       return completedTime!.difference(startTime);

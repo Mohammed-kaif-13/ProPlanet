@@ -5,7 +5,9 @@ import '../providers/auth_provider.dart';
 import '../providers/activity_provider.dart';
 import '../providers/notification_provider.dart';
 import '../providers/points_provider.dart';
+import '../providers/food_ordering_provider.dart';
 import '../models/activity_model.dart';
+import '../screens/food/food_menu_screen.dart';
 import 'stats_card.dart';
 import 'activity_card.dart';
 import 'quick_action_button.dart';
@@ -420,6 +422,109 @@ class _DashboardWidgetState extends State<DashboardWidget>
             context,
           ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
         ).animate().fadeIn(delay: 700.ms, duration: 600.ms),
+        const SizedBox(height: 16),
+        // Food Ordering Button - Prominent
+        Consumer<FoodOrderingProvider>(
+          builder: (context, foodProvider, child) {
+            return Card(
+              elevation: 4,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: InkWell(
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => const FoodMenuScreen(),
+                    ),
+                  );
+                },
+                borderRadius: BorderRadius.circular(16),
+                child: Container(
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(16),
+                    gradient: LinearGradient(
+                      colors: [
+                        Colors.orange.shade400,
+                        Colors.orange.shade600,
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.2),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: const Icon(
+                          Icons.restaurant_menu,
+                          color: Colors.white,
+                          size: 32,
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'Order Food',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              foodProvider.cartItemCount > 0
+                                  ? '${foodProvider.cartItemCount} item${foodProvider.cartItemCount > 1 ? 's' : ''} in cart'
+                                  : 'Earn eco-points with every order! 🌱',
+                              style: TextStyle(
+                                color: Colors.white.withOpacity(0.9),
+                                fontSize: 14,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      if (foodProvider.cartItemCount > 0)
+                        Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: const BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.circle,
+                          ),
+                          child: Text(
+                            '${foodProvider.cartItemCount}',
+                            style: TextStyle(
+                              color: Colors.orange.shade600,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
+                        )
+                      else
+                        const Icon(
+                          Icons.arrow_forward_ios,
+                          color: Colors.white,
+                          size: 20,
+                        ),
+                    ],
+                  ),
+                ),
+              ),
+            )
+                .animate()
+                .fadeIn(delay: 750.ms, duration: 600.ms)
+                .scale(begin: const Offset(0.95, 0.95), end: const Offset(1, 1));
+          },
+        ),
         const SizedBox(height: 16),
         Row(
           children: [

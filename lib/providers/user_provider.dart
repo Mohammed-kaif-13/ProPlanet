@@ -21,7 +21,7 @@ class UserProvider with ChangeNotifier {
     try {
       final prefs = await SharedPreferences.getInstance();
       final userJson = prefs.getString('current_user');
-      
+
       if (userJson != null) {
         final userData = jsonDecode(userJson);
         _currentUser = User.fromJson(userData);
@@ -31,7 +31,7 @@ class UserProvider with ChangeNotifier {
           id: 'demo_user_1',
           name: 'Eco Warrior',
           email: 'eco@proplanet.com',
-          joinDate: DateTime.now(),
+          joinedAt: DateTime.now(),
           totalPoints: 0,
           level: 1,
           badges: [],
@@ -39,7 +39,7 @@ class UserProvider with ChangeNotifier {
         );
         await saveUserToLocal(_currentUser!);
       }
-      
+
       _error = null;
     } catch (e) {
       _error = 'Failed to initialize user: ';
@@ -81,8 +81,10 @@ class UserProvider with ChangeNotifier {
   Future<void> addPoints(int points, String category) async {
     if (_currentUser == null) return;
 
-    final updatedCategoryPoints = Map<String, int>.from(_currentUser!.categoryPoints);
-    updatedCategoryPoints[category] = (updatedCategoryPoints[category] ?? 0) + points;
+    final updatedCategoryPoints =
+        Map<String, int>.from(_currentUser!.categoryPoints);
+    updatedCategoryPoints[category] =
+        (updatedCategoryPoints[category] ?? 0) + points;
 
     final newTotalPoints = _currentUser!.totalPoints + points;
     final newLevel = calculateLevel(newTotalPoints);
@@ -113,12 +115,24 @@ class UserProvider with ChangeNotifier {
   // Get points needed for next level
   int getPointsForNextLevel() {
     if (_currentUser == null) return 0;
-    
+
     final currentLevel = _currentUser!.level;
-    final levelThresholds = [0, 100, 300, 600, 1000, 1500, 2100, 2800, 3600, 4500, 5500];
-    
+    final levelThresholds = [
+      0,
+      100,
+      300,
+      600,
+      1000,
+      1500,
+      2100,
+      2800,
+      3600,
+      4500,
+      5500
+    ];
+
     if (currentLevel >= 10) return 0; // Max level reached
-    
+
     return levelThresholds[currentLevel] - _currentUser!.totalPoints;
   }
 
@@ -129,7 +143,7 @@ class UserProvider with ChangeNotifier {
     final updatedBadges = List<String>.from(_currentUser!.badges);
     if (!updatedBadges.contains(badge)) {
       updatedBadges.add(badge);
-      
+
       final updatedUser = _currentUser!.copyWith(badges: updatedBadges);
       await updateUser(updatedUser);
     }

@@ -2,8 +2,10 @@
 import 'package:provider/provider.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../providers/activity_provider.dart';
-import '../providers/user_provider.dart';
+import '../providers/auth_provider.dart';
 import '../providers/notification_provider.dart';
+import '../providers/points_provider.dart';
+import '../services/firebase_service.dart';
 import '../models/activity_model.dart';
 import '../widgets/activity_card.dart';
 
@@ -14,7 +16,8 @@ class ActivitiesScreen extends StatefulWidget {
   State<ActivitiesScreen> createState() => _ActivitiesScreenState();
 }
 
-class _ActivitiesScreenState extends State<ActivitiesScreen> with TickerProviderStateMixin {
+class _ActivitiesScreenState extends State<ActivitiesScreen>
+    with TickerProviderStateMixin {
   late TabController _tabController;
   ActivityCategory? _selectedCategory;
 
@@ -24,6 +27,26 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> with TickerProvider
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
+    // Initialize activities and sync with Firebase when the screen loads
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      final activityProvider =
+          Provider.of<ActivityProvider>(context, listen: false);
+      final pointsProvider =
+          Provider.of<PointsProvider>(context, listen: false);
+
+      if (authProvider.currentUser != null) {
+        // Sync with Firebase
+        activityProvider.syncWithFirebase(authProvider.currentUser!.id);
+        // Load points from Firebase
+        pointsProvider.loadPointsFromFirebase(authProvider.currentUser!.id);
+        // Reset activities for new day if needed
+        activityProvider.resetActivitiesForNewDay(authProvider.currentUser!.id);
+      } else {
+        // Fallback to local initialization
+        activityProvider.initializeActivities();
+      }
+    });
   }
 
   @override
@@ -37,6 +60,8 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> with TickerProvider
     return Scaffold(
       appBar: AppBar(
         title: const Text('Eco Activities'),
+        leading: null, // Remove the back arrow
+        automaticallyImplyLeading: false, // Prevent automatic back button
         bottom: TabBar(
           controller: _tabController,
           tabs: const [
@@ -104,9 +129,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> with TickerProvider
                   );
                 },
               ),
-            ).animate()
-              .fadeIn(duration: 400.ms)
-              .slideY(begin: -0.2, end: 0),
+            ).animate().fadeIn(duration: 400.ms).slideY(begin: -0.2, end: 0),
 
             // Activities List
             Expanded(
@@ -115,17 +138,14 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> with TickerProvider
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(
-                            Icons.eco,
-                            size: 64,
-                            color: Colors.grey[400],
-                          ),
+                          Icon(Icons.eco, size: 64, color: Colors.grey[400]),
                           const SizedBox(height: 16),
                           Text(
                             'No activities available',
-                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                              color: Colors.grey[600],
-                            ),
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleMedium
+                                ?.copyWith(color: Colors.grey[600]),
                           ),
                         ],
                       ),
@@ -140,8 +160,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> with TickerProvider
                           child: _buildAvailableActivityCard(activity),
                         );
                       },
-                    ).animate()
-                      .fadeIn(delay: 200.ms, duration: 600.ms),
+                    ).animate().fadeIn(delay: 200.ms, duration: 600.ms),
             ),
           ],
         );
@@ -159,24 +178,20 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> with TickerProvider
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(
-                  Icons.pending,
-                  size: 64,
-                  color: Colors.grey[400],
-                ),
+                Icon(Icons.pending, size: 64, color: Colors.grey[400]),
                 const SizedBox(height: 16),
                 Text(
                   'No activities in progress',
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    color: Colors.grey[600],
-                  ),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.titleMedium?.copyWith(color: Colors.grey[600]),
                 ),
                 const SizedBox(height: 8),
                 Text(
                   'Start an activity to see it here!',
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Colors.grey[500],
-                  ),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodyMedium?.copyWith(color: Colors.grey[500]),
                 ),
                 const SizedBox(height: 16),
                 ElevatedButton(
@@ -187,9 +202,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> with TickerProvider
                 ),
               ],
             ),
-          ).animate()
-            .fadeIn(duration: 600.ms)
-            .slideY(begin: 0.2, end: 0);
+          ).animate().fadeIn(duration: 600.ms).slideY(begin: 0.2, end: 0);
         }
 
         return ListView.builder(
@@ -205,8 +218,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> with TickerProvider
               ),
             );
           },
-        ).animate()
-          .fadeIn(duration: 600.ms);
+        ).animate().fadeIn(duration: 600.ms);
       },
     );
   }
@@ -221,30 +233,24 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> with TickerProvider
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(
-                  Icons.check_circle,
-                  size: 64,
-                  color: Colors.grey[400],
-                ),
+                Icon(Icons.check_circle, size: 64, color: Colors.grey[400]),
                 const SizedBox(height: 16),
                 Text(
                   'No completed activities yet',
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    color: Colors.grey[600],
-                  ),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.titleMedium?.copyWith(color: Colors.grey[600]),
                 ),
                 const SizedBox(height: 8),
                 Text(
                   'Complete activities to see your achievements!',
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Colors.grey[500],
-                  ),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodyMedium?.copyWith(color: Colors.grey[500]),
                 ),
               ],
             ),
-          ).animate()
-            .fadeIn(duration: 600.ms)
-            .slideY(begin: 0.2, end: 0);
+          ).animate().fadeIn(duration: 600.ms).slideY(begin: 0.2, end: 0);
         }
 
         return ListView.builder(
@@ -260,8 +266,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> with TickerProvider
               ),
             );
           },
-        ).animate()
-          .fadeIn(duration: 600.ms);
+        ).animate().fadeIn(duration: 600.ms);
       },
     );
   }
@@ -284,7 +289,9 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> with TickerProvider
                     width: 50,
                     height: 50,
                     decoration: BoxDecoration(
-                      color: _getCategoryColor(activity.category).withOpacity(0.1),
+                      color: _getCategoryColor(
+                        activity.category,
+                      ).withOpacity(0.1),
                       borderRadius: BorderRadius.circular(25),
                     ),
                     child: Center(
@@ -304,15 +311,21 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> with TickerProvider
                       children: [
                         Text(
                           activity.title,
-                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
+                          style: Theme.of(context)
+                              .textTheme
+                              .titleMedium
+                              ?.copyWith(fontWeight: FontWeight.bold),
                         ),
                         const SizedBox(height: 4),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 2,
+                          ),
                           decoration: BoxDecoration(
-                            color: _getCategoryColor(activity.category).withOpacity(0.2),
+                            color: _getCategoryColor(
+                              activity.category,
+                            ).withOpacity(0.2),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Text(
@@ -330,9 +343,14 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> with TickerProvider
 
                   // Difficulty Badge
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
-                      color: _getDifficultyColor(activity.difficulty).withOpacity(0.2),
+                      color: _getDifficultyColor(
+                        activity.difficulty,
+                      ).withOpacity(0.2),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
@@ -352,9 +370,9 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> with TickerProvider
               // Description
               Text(
                 activity.description,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Colors.grey[600],
-                ),
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyMedium?.copyWith(color: Colors.grey[600]),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -367,32 +385,34 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> with TickerProvider
                   Icon(Icons.star, color: Colors.amber, size: 16),
                   const SizedBox(width: 4),
                   Text(
-                    ' points',
+                    '${activity.points} points',
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      fontWeight: FontWeight.w500,
-                      color: Colors.amber[700],
-                    ),
+                          fontWeight: FontWeight.w500,
+                          color: Colors.amber[700],
+                        ),
                   ),
                   const SizedBox(width: 16),
                   Icon(Icons.access_time, color: Colors.grey[600], size: 16),
                   const SizedBox(width: 4),
                   Text(
-                    'min',
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Colors.grey[600],
-                    ),
+                    '${activity.estimatedTime.inMinutes} min',
+                    style: Theme.of(
+                      context,
+                    ).textTheme.bodySmall?.copyWith(color: Colors.grey[600]),
                   ),
                   const Spacer(),
-                  Icon(Icons.arrow_forward_ios, color: Colors.grey[400], size: 16),
+                  Icon(
+                    Icons.arrow_forward_ios,
+                    color: Colors.grey[400],
+                    size: 16,
+                  ),
                 ],
               ),
             ],
           ),
         ),
       ),
-    ).animate()
-      .fadeIn(duration: 400.ms)
-      .slideX(begin: 0.2, end: 0);
+    ).animate().fadeIn(duration: 400.ms).slideX(begin: 0.2, end: 0);
   }
 
   void _showActivityStartDialog(EcoActivity activity) {
@@ -413,38 +433,45 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> with TickerProvider
             children: [
               Text(activity.description),
               const SizedBox(height: 16),
-              
               if (activity.instructions.isNotEmpty) ...[
                 Text(
                   'Instructions:',
                   style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+                        fontWeight: FontWeight.bold,
+                      ),
                 ),
                 const SizedBox(height: 8),
                 Text(activity.instructions),
                 const SizedBox(height: 16),
               ],
-
               Row(
                 children: [
                   Icon(Icons.star, color: Colors.amber, size: 20),
                   const SizedBox(width: 8),
-                  Text(' points'),
+                  Text('${activity.points} points'),
                 ],
               ),
               const SizedBox(height: 8),
               Row(
                 children: [
-                  Icon(Icons.access_time, color: Colors.grey[600], size: 20),
+                  Icon(
+                    Icons.access_time,
+                    color: Colors.grey[600],
+                    size: 20,
+                  ),
                   const SizedBox(width: 8),
-                  Text('Estimated:  minutes'),
+                  Text(
+                      'Estimated: ${activity.estimatedTime.inMinutes} minutes'),
                 ],
               ),
               const SizedBox(height: 8),
               Row(
                 children: [
-                  Icon(Icons.category, color: _getCategoryColor(activity.category), size: 20),
+                  Icon(
+                    Icons.category,
+                    color: _getCategoryColor(activity.category),
+                    size: 20,
+                  ),
                   const SizedBox(width: 8),
                   Text(_getCategoryName(activity.category)),
                 ],
@@ -535,7 +562,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> with TickerProvider
               children: [
                 Icon(Icons.play_arrow, color: Colors.blue, size: 16),
                 const SizedBox(width: 4),
-                Text('Started: '),
+                Text('Started: ${_formatDateTime(userActivity.startTime)}'),
               ],
             ),
             const SizedBox(height: 8),
@@ -543,7 +570,8 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> with TickerProvider
               children: [
                 Icon(Icons.check, color: Colors.green, size: 16),
                 const SizedBox(width: 4),
-                Text('Completed: '),
+                Text(
+                    'Completed: ${_formatDateTime(userActivity.completedTime!)}'),
               ],
             ),
             const SizedBox(height: 8),
@@ -551,7 +579,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> with TickerProvider
               children: [
                 Icon(Icons.star, color: Colors.amber, size: 16),
                 const SizedBox(width: 4),
-                Text('Earned:  points'),
+                Text('Earned: ${userActivity.activity.points} points'),
               ],
             ),
             if (userActivity.duration.inMinutes > 0) ...[
@@ -560,7 +588,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> with TickerProvider
                 children: [
                   Icon(Icons.timer, color: Colors.grey[600], size: 16),
                   const SizedBox(width: 4),
-                  Text('Duration:  minutes'),
+                  Text('Duration: ${userActivity.duration.inMinutes} minutes'),
                 ],
               ),
             ],
@@ -577,14 +605,20 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> with TickerProvider
   }
 
   void _startActivity(EcoActivity activity) async {
-    final userProvider = Provider.of<UserProvider>(context, listen: false);
-    final activityProvider = Provider.of<ActivityProvider>(context, listen: false);
-    
-    if (userProvider.currentUser == null) return;
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final activityProvider = Provider.of<ActivityProvider>(
+      context,
+      listen: false,
+    );
+
+    if (authProvider.currentUser == null) return;
 
     try {
-      await activityProvider.startActivity(activity, userProvider.currentUser!.id);
-      
+      await activityProvider.startActivityWithFirebase(
+        activity,
+        authProvider.currentUser!.id,
+      );
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -601,40 +635,69 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> with TickerProvider
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error starting activity: ')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error starting activity: ')));
       }
     }
   }
 
   void _completeActivity(UserActivity userActivity) async {
-    final activityProvider = Provider.of<ActivityProvider>(context, listen: false);
-    final userProvider = Provider.of<UserProvider>(context, listen: false);
-    final notificationProvider = Provider.of<NotificationProvider>(context, listen: false);
-    
+    final activityProvider = Provider.of<ActivityProvider>(
+      context,
+      listen: false,
+    );
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final notificationProvider = Provider.of<NotificationProvider>(
+      context,
+      listen: false,
+    );
+    final pointsProvider = Provider.of<PointsProvider>(
+      context,
+      listen: false,
+    );
+
+    if (authProvider.currentUser == null) return;
+
     try {
-      await activityProvider.completeActivity(userActivity.id);
-      
-      // Add points to user
-      await userProvider.addPoints(
-        userActivity.activity.points,
-        userActivity.activity.category.toString().split('.').last,
+      await activityProvider.completeActivityWithFirebase(
+        userActivity.id,
+        authProvider.currentUser!.id,
       );
-      
+
+      // Points are already added in completeActivityWithFirebase
+      // Update PointsProvider with the new values from Firebase
+      final firebaseService = FirebaseService();
+      final userData =
+          await firebaseService.getUserData(authProvider.currentUser!.id);
+      if (userData != null) {
+        final today = DateTime.now().toIso8601String().split('T')[0];
+        final dailyPoints = await firebaseService.getDailyPoints(
+            authProvider.currentUser!.id, today);
+
+        pointsProvider.updatePointsFromFirebase(
+          totalPoints: userData.totalPoints,
+          dailyPoints: dailyPoints,
+          categoryPoints: userData.categoryPoints,
+        );
+      }
+
       // Send achievement notification
       await notificationProvider.sendAchievementNotification(
-        ' Activity Completed!',
-        'You earned  points for completing ',
+        '${userActivity.activity.title} Activity Completed!',
+        'You earned ${userActivity.activity.points} points for completing ${userActivity.activity.title}',
       );
-      
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Completed! + points'),
+            content: Text(
+                '🎉 Completed! +${userActivity.activity.points} points earned!'),
             backgroundColor: Colors.green,
+            duration: const Duration(seconds: 3),
             action: SnackBarAction(
-              label: 'View',
+              label: 'View All',
+              textColor: Colors.white,
               onPressed: () {
                 _tabController.animateTo(2); // Switch to Completed tab
               },
@@ -644,9 +707,9 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> with TickerProvider
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error completing activity: ')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error completing activity: ')));
       }
     }
   }
@@ -668,6 +731,10 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> with TickerProvider
       case ActivityCategory.nature:
         return 'Nature';
     }
+  }
+
+  String _formatDateTime(DateTime dateTime) {
+    return '${dateTime.day}/${dateTime.month}/${dateTime.year} ${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}';
   }
 
   Color _getCategoryColor(ActivityCategory category) {
@@ -700,9 +767,5 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> with TickerProvider
       default:
         return Colors.grey;
     }
-  }
-
-  String _formatDateTime(DateTime dateTime) {
-    return '// :';
   }
 }

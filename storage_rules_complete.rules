@@ -1,0 +1,96 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    
+    // ========================================
+    // FOOD ITEMS IMAGES
+    // ========================================
+    
+    // Food item images - all authenticated users can read, only admins can upload
+    match /food_items/{foodId}.jpg {
+      // All authenticated users can read food images
+      allow read: if request.auth != null;
+      
+      // Only admins can upload/delete food images
+      allow write: if request.auth != null && 
+                      exists(/databases/(default)/documents/admins/$(request.auth.uid)) &&
+                      get(/databases/(default)/documents/admins/$(request.auth.uid)).data.isActive == true &&
+                      get(/databases/(default)/documents/admins/$(request.auth.uid)).data.role == 'admin';
+      
+      // File size validation (max 5MB)
+      allow write: if request.resource.size < 5 * 1024 * 1024;
+      
+      // File type validation (only images)
+      allow write: if request.resource.contentType.matches('image/.*');
+    }
+    
+    // Food item images with different extensions
+    match /food_items/{foodId}.{extension} {
+      // All authenticated users can read
+      allow read: if request.auth != null;
+      
+      // Only admins can upload
+      allow write: if request.auth != null && 
+                      exists(/databases/(default)/documents/admins/$(request.auth.uid)) &&
+                      get(/databases/(default)/documents/admins/$(request.auth.uid)).data.isActive == true &&
+                      get(/databases/(default)/documents/admins/$(request.auth.uid)).data.role == 'admin';
+      
+      // File size validation (max 5MB)
+      allow write: if request.resource.size < 5 * 1024 * 1024;
+      
+      // File type validation (only images)
+      allow write: if request.resource.contentType.matches('image/.*');
+    }
+    
+    // ========================================
+    // USER PROFILE IMAGES (Existing)
+    // ========================================
+    
+    // User profile images
+    match /user_profiles/{userId}/{allPaths=**} {
+      // Users can read their own profile images
+      allow read: if request.auth != null && request.auth.uid == userId;
+      
+      // Users can upload their own profile images
+      allow write: if request.auth != null && request.auth.uid == userId;
+      
+      // File size validation (max 2MB for profile images)
+      allow write: if request.resource.size < 2 * 1024 * 1024;
+      
+      // File type validation (only images)
+      allow write: if request.resource.contentType.matches('image/.*');
+    }
+    
+    // ========================================
+    // ACTIVITY PHOTOS (Existing)
+    // ========================================
+    
+    // Activity photos
+    match /activity_photos/{userId}/{allPaths=**} {
+      // Users can read their own activity photos
+      allow read: if request.auth != null && request.auth.uid == userId;
+      
+      // Users can upload their own activity photos
+      allow write: if request.auth != null && request.auth.uid == userId;
+      
+      // File size validation (max 5MB)
+      allow write: if request.resource.size < 5 * 1024 * 1024;
+      
+      // File type validation (only images)
+      allow write: if request.resource.contentType.matches('image/.*');
+    }
+    
+    // ========================================
+    // DENY ALL OTHER ACCESS
+    // ========================================
+    
+    // Deny all other access by default
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}
+
+
+

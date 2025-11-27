@@ -1,0 +1,188 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // ========================================
+    // HELPER FUNCTIONS
+    // ========================================
+    
+    // Helper function to check if user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    // Helper function to check if user owns the resource
+    function isOwner(userId) {
+      return request.auth != null && request.auth.uid == userId;
+    }
+    
+    // Helper function to check if user is admin
+    function isAdmin() {
+      return request.auth != null && 
+             exists(/databases/$(database)/documents/admins/$(request.auth.uid)) &&
+             get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.isActive == true &&
+             get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.role == 'admin';
+    }
+    
+    // ========================================
+    // ADMIN COLLECTION (NEW - For Food Ordering)
+    // ========================================
+    
+    // Admins collection - only admins can access
+    match /admins/{adminId} {
+      // Admins can read their own admin document
+      allow read: if isAuthenticated() && isOwner(adminId);
+      // Only existing admins can create/update admin documents
+      allow create, update, delete: if isAdmin();
+    }
+    
+    // ========================================
+    // FOOD ORDERING COLLECTIONS (NEW)
+    // ========================================
+    
+    // Food items collection - all authenticated users can read, only admins can write
+    match /foodItems/{foodId} {
+      // All authenticated users can read available food items
+      allow read: if isAuthenticated();
+      // Only admins can create, update, or delete food items
+      allow create, update, delete: if isAdmin();
+    }
+    
+    // User orders subcollection - users can only access their own orders, admins can read/update all
+    match /users/{userId}/orders/{orderId} {
+      allow read: if isAuthenticated() && (isOwner(userId) || isAdmin());
+      allow create: if isAuthenticated() && isOwner(userId);
+      allow update: if isAuthenticated() && (isOwner(userId) || isAdmin());
+      allow delete: if isAuthenticated() && isOwner(userId);
+    }
+    
+    // User addresses subcollection - users can only access their own addresses
+    match /users/{userId}/addresses/{addressId} {
+      allow read, write: if isAuthenticated() && isOwner(userId);
+      allow create: if isAuthenticated() && isOwner(userId);
+      allow update: if isAuthenticated() && isOwner(userId);
+      allow delete: if isAuthenticated() && isOwner(userId);
+    }
+    
+    // ========================================
+    // EXISTING PROPLANET COLLECTIONS (PRESERVED)
+    // ========================================
+    
+    // Users collection - users can only access their own data, admins can read all
+    match /users/{userId} {
+      allow read: if isAuthenticated() && (isOwner(userId) || isAdmin());
+      allow write: if isAuthenticated() && isOwner(userId);
+      
+      // Daily points subcollection - CRITICAL for daily points functionality
+      match /dailyPoints/{date} {
+        allow read, write: if isAuthenticated() && isOwner(userId);
+      }
+      
+      // Daily activities subcollection - CRITICAL for daily activities functionality
+      match /dailyActivities/{date} {
+        allow read, write: if isAuthenticated() && isOwner(userId);
+      }
+      
+      // User activities subcollection
+      match /activities/{activityId} {
+        allow read, write: if isAuthenticated() && isOwner(userId);
+      }
+      
+      // User activities subcollection (alternative naming)
+      match /userActivities/{userActivityId} {
+        allow read, write: if isAuthenticated() && isOwner(userId);
+      }
+      
+      // User notifications subcollection
+      match /notifications/{notificationId} {
+        allow read, write: if isAuthenticated() && isOwner(userId);
+      }
+      
+      // User points subcollection
+      match /points/{pointId} {
+        allow read, write: if isAuthenticated() && isOwner(userId);
+      }
+      
+      // User achievements subcollection
+      match /achievements/{achievementId} {
+        allow read, write: if isAuthenticated() && isOwner(userId);
+      }
+      
+      // User badges subcollection
+      match /badges/{badgeId} {
+        allow read, write: if isAuthenticated() && isOwner(userId);
+      }
+      
+      // User environmental impact subcollection
+      match /environmental_impact/{impactId} {
+        allow read, write: if isAuthenticated() && isOwner(userId);
+      }
+      
+      // User category points subcollection
+      match /category_points/{categoryId} {
+        allow read, write: if isAuthenticated() && isOwner(userId);
+      }
+      
+      // User orders subcollection (food ordering) - admins can also read/update
+      match /orders/{orderId} {
+        allow read: if isAuthenticated() && (isOwner(userId) || isAdmin());
+        allow create: if isAuthenticated() && isOwner(userId);
+        allow update: if isAuthenticated() && (isOwner(userId) || isAdmin());
+        allow delete: if isAuthenticated() && isOwner(userId);
+      }
+      
+      // User addresses subcollection (food ordering)
+      match /addresses/{addressId} {
+        allow read, write: if isAuthenticated() && isOwner(userId);
+      }
+    }
+    
+    // Global activities collection - all authenticated users can read
+    match /activities/{activityId} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated() && isOwner(resource.data.userId);
+    }
+    
+    // Global notifications collection
+    match /notifications/{notificationId} {
+      allow read, write: if isAuthenticated() && isOwner(resource.data.userId);
+    }
+    
+    // Global points collection
+    match /points/{pointId} {
+      allow read, write: if isAuthenticated() && isOwner(resource.data.userId);
+    }
+    
+    // Global achievements collection
+    match /achievements/{achievementId} {
+      allow read, write: if isAuthenticated() && isOwner(resource.data.userId);
+    }
+    
+    // Global badges collection
+    match /badges/{badgeId} {
+      allow read, write: if isAuthenticated() && isOwner(resource.data.userId);
+    }
+    
+    // Global environmental impact collection
+    match /environmental_impact/{impactId} {
+      allow read, write: if isAuthenticated() && isOwner(resource.data.userId);
+    }
+    
+    // Global category points collection
+    match /category_points/{categoryId} {
+      allow read, write: if isAuthenticated() && isOwner(resource.data.userId);
+    }
+    
+    // ========================================
+    // DENY ALL OTHER ACCESS
+    // ========================================
+    
+    // Deny all other access by default
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
+
+

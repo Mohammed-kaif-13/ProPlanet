@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../../providers/auth_provider.dart';
+import '../../providers/admin_provider.dart';
 import '../../utils/error_handler.dart';
 import '../../widgets/auth_loading_screen.dart';
 import 'register_screen.dart';
@@ -104,10 +105,20 @@ class _LoginScreenState extends State<LoginScreen>
         Navigator.of(context).pop(); // Close loading screen
 
         if (success && authProvider.currentUser != null) {
-          // Quick transition to home screen
+          // Check if user is admin
+          final adminProvider = Provider.of<AdminProvider>(context, listen: false);
+          final isAdmin = await adminProvider.checkAdminStatus(
+            authProvider.currentUser!.id,
+          );
+
+          // Quick transition to appropriate screen
           await Future.delayed(const Duration(milliseconds: 300));
           if (mounted) {
-            Navigator.of(context).pushReplacementNamed('/home');
+            if (isAdmin) {
+              Navigator.of(context).pushReplacementNamed('/admin');
+            } else {
+              Navigator.of(context).pushReplacementNamed('/home');
+            }
           }
         } else {
           // Show error if login failed
@@ -166,10 +177,20 @@ class _LoginScreenState extends State<LoginScreen>
         Navigator.of(context).pop(); // Close loading screen
 
         if (success && authProvider.currentUser != null) {
-          // Quick transition to home screen
+          // Check if user is admin
+          final adminProvider = Provider.of<AdminProvider>(context, listen: false);
+          final isAdmin = await adminProvider.checkAdminStatus(
+            authProvider.currentUser!.id,
+          );
+
+          // Quick transition to appropriate screen
           await Future.delayed(const Duration(milliseconds: 300));
           if (mounted) {
-            Navigator.of(context).pushReplacementNamed('/home');
+            if (isAdmin) {
+              Navigator.of(context).pushReplacementNamed('/admin');
+            } else {
+              Navigator.of(context).pushReplacementNamed('/home');
+            }
           }
         } else {
           // Show error if Google sign-in failed

@@ -20,25 +20,29 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   final List<OnboardingData> _pages = [
     OnboardingData(
       title: 'Welcome to ProPlanet',
-      description: 'Join millions of eco-warriors making a difference, one action at a time.',
+      description:
+          'Join millions of eco-warriors making a difference, one action at a time.',
       icon: Icons.eco,
       color: Color(0xFF4CAF50),
     ),
     OnboardingData(
       title: 'Track Your Impact',
-      description: 'Monitor your eco-friendly activities and see the real impact you\'re making on our planet.',
+      description:
+          'Monitor your eco-friendly activities and see the real impact you\'re making on our planet.',
       icon: Icons.trending_up,
       color: Color(0xFF2196F3),
     ),
     OnboardingData(
       title: 'Earn Rewards',
-      description: 'Complete activities, earn points, unlock badges, and level up your eco game!',
+      description:
+          'Complete activities, earn points, unlock badges, and level up your eco game!',
       icon: Icons.emoji_events,
       color: Color(0xFFFF9800),
     ),
     OnboardingData(
       title: 'Stay Motivated',
-      description: 'Get personalized notifications and tips to keep your eco journey on track.',
+      description:
+          'Get personalized notifications and tips to keep your eco journey on track.',
       icon: Icons.notifications_active,
       color: Color(0xFF9C27B0),
     ),
@@ -132,7 +136,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       id: 'user_',
       name: name,
       email: _emailController.text.trim(),
-      joinDate: DateTime.now(),
+      joinedAt: DateTime.now(),
       totalPoints: 0,
       level: 1,
       badges: [],
@@ -189,7 +193,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           width: 120,
                           height: 120,
                           decoration: BoxDecoration(
-                            color: page.color.withOpacity(0.1),
+                            color: page.color.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(60),
                           ),
                           child: Icon(
@@ -197,36 +201,43 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             size: 60,
                             color: page.color,
                           ),
-                        ).animate()
-                          .scale(duration: 600.ms, curve: Curves.elasticOut),
+                        )
+                            .animate()
+                            .scale(duration: 600.ms, curve: Curves.elasticOut),
 
                         const SizedBox(height: 40),
 
                         // Title
                         Text(
                           page.title,
-                          style: Theme.of(context).textTheme.displaySmall?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: page.color,
-                          ),
+                          style: Theme.of(context)
+                              .textTheme
+                              .displaySmall
+                              ?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: page.color,
+                              ),
                           textAlign: TextAlign.center,
-                        ).animate()
-                          .fadeIn(delay: 200.ms, duration: 600.ms)
-                          .slideY(begin: 0.3, end: 0),
+                        )
+                            .animate()
+                            .fadeIn(delay: 200.ms, duration: 600.ms)
+                            .slideY(begin: 0.3, end: 0),
 
                         const SizedBox(height: 20),
 
                         // Description
                         Text(
                           page.description,
-                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                            color: Colors.grey[600],
-                            height: 1.5,
-                          ),
+                          style:
+                              Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                    color: Colors.grey[600],
+                                    height: 1.5,
+                                  ),
                           textAlign: TextAlign.center,
-                        ).animate()
-                          .fadeIn(delay: 400.ms, duration: 600.ms)
-                          .slideY(begin: 0.3, end: 0),
+                        )
+                            .animate()
+                            .fadeIn(delay: 400.ms, duration: 600.ms)
+                            .slideY(begin: 0.3, end: 0),
                       ],
                     ),
                   );
@@ -251,8 +262,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   ),
                 ),
               ),
-            ).animate()
-              .fadeIn(delay: 600.ms, duration: 400.ms),
+            ).animate().fadeIn(delay: 600.ms, duration: 400.ms),
 
             const SizedBox(height: 40),
 
@@ -287,9 +297,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   ),
                 ],
               ),
-            ).animate()
-              .fadeIn(delay: 800.ms, duration: 400.ms)
-              .slideY(begin: 0.3, end: 0),
+            )
+                .animate()
+                .fadeIn(delay: 800.ms, duration: 400.ms)
+                .slideY(begin: 0.3, end: 0),
           ],
         ),
       ),

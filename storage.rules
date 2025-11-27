@@ -1,0 +1,69 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    
+    // Helper function to check if user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    // Helper function to check if user is admin
+    function isAdmin() {
+      return request.auth != null && 
+             exists(/databases/(default)/documents/admins/$(request.auth.uid)) &&
+             get(/databases/(default)/documents/admins/$(request.auth.uid)).data.isActive == true &&
+             get(/databases/(default)/documents/admins/$(request.auth.uid)).data.role == 'admin';
+    }
+    
+    // Food item images - all authenticated users can read, only admins can upload
+    match /food_items/{allPaths=**} {
+      // All authenticated users can read food images
+      allow read: if isAuthenticated();
+      
+      // Only admins can upload/delete food images
+      allow write: if isAdmin();
+      
+      // File size validation (max 5MB)
+      allow write: if request.resource.size < 5 * 1024 * 1024;
+      
+      // File type validation (only images)
+      allow write: if request.resource.contentType.matches('image/.*');
+    }
+    
+    // User profile images
+    match /user_profiles/{userId}/{allPaths=**} {
+      // Users can read their own profile images
+      allow read: if isAuthenticated() && request.auth.uid == userId;
+      
+      // Users can upload their own profile images
+      allow write: if isAuthenticated() && request.auth.uid == userId;
+      
+      // File size validation (max 2MB for profile images)
+      allow write: if request.resource.size < 2 * 1024 * 1024;
+      
+      // File type validation (only images)
+      allow write: if request.resource.contentType.matches('image/.*');
+    }
+    
+    // Activity photos
+    match /activity_photos/{userId}/{allPaths=**} {
+      // Users can read their own activity photos
+      allow read: if isAuthenticated() && request.auth.uid == userId;
+      
+      // Users can upload their own activity photos
+      allow write: if isAuthenticated() && request.auth.uid == userId;
+      
+      // File size validation (max 5MB)
+      allow write: if request.resource.size < 5 * 1024 * 1024;
+      
+      // File type validation (only images)
+      allow write: if request.resource.contentType.matches('image/.*');
+    }
+    
+    // Deny all other access by default
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

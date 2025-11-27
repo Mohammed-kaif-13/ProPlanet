@@ -31,7 +31,7 @@ class ActivityCard extends StatelessWidget {
                 width: 50,
                 height: 50,
                 decoration: BoxDecoration(
-                  color: isCompleted 
+                  color: isCompleted
                       ? Colors.green.withOpacity(0.1)
                       : _getCategoryColor(activity.category).withOpacity(0.1),
                   borderRadius: BorderRadius.circular(25),
@@ -54,9 +54,9 @@ class ActivityCard extends StatelessWidget {
                     Text(
                       activity.title,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: isCompleted ? Colors.green : null,
-                      ),
+                            fontWeight: FontWeight.bold,
+                            color: isCompleted ? Colors.green : null,
+                          ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -64,8 +64,8 @@ class ActivityCard extends StatelessWidget {
                     Text(
                       activity.description,
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Colors.grey[600],
-                      ),
+                            color: Colors.grey[600],
+                          ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -79,11 +79,12 @@ class ActivityCard extends StatelessWidget {
                         ),
                         const SizedBox(width: 4),
                         Text(
-                          ' points',
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            fontWeight: FontWeight.w500,
-                            color: Colors.amber[700],
-                          ),
+                          '${activity.points} points',
+                          style:
+                              Theme.of(context).textTheme.bodySmall?.copyWith(
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors.amber[700],
+                                  ),
                         ),
                         const SizedBox(width: 16),
                         Icon(
@@ -93,10 +94,11 @@ class ActivityCard extends StatelessWidget {
                         ),
                         const SizedBox(width: 4),
                         Text(
-                          'min',
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: Colors.grey[600],
-                          ),
+                          '${activity.estimatedTime.inMinutes} min',
+                          style:
+                              Theme.of(context).textTheme.bodySmall?.copyWith(
+                                    color: Colors.grey[600],
+                                  ),
                         ),
                       ],
                     ),
@@ -124,9 +126,7 @@ class ActivityCard extends StatelessWidget {
           ),
         ),
       ),
-    ).animate()
-      .fadeIn(duration: 400.ms)
-      .slideX(begin: 0.2, end: 0);
+    ).animate().fadeIn(duration: 400.ms).slideX(begin: 0.2, end: 0);
   }
 
   Color _getCategoryColor(ActivityCategory category) {
